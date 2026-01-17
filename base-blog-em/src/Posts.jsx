@@ -11,10 +11,24 @@ export function Posts() {
 
   // replace with useQuery
   // const data = [];
-  const { data } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
+    staleTime: 1000 * 60 * 5,
   });
+
+  if ( isLoading) { 
+    return <div>Loading posts...</div>;
+  }
+
+  if ( isError) {
+    return (
+      <>
+         <h3> Error fetching posts</h3>
+         <p>{error.toString()}</p>;
+      </>
+    )
+  }
 
   return (
     <>

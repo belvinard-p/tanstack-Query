@@ -52,7 +52,7 @@ React Query (TanStack Query) is a powerful library for managing server state in 
 - Perfect for showing toast notifications or logging
 - Example: Show success message after updating a post
 
-for SSR, see `https://tanstack.com/query/latest/docs/framework/react/guides/ssr`
+For SSR, see `https://tanstack.com/query/latest/docs/framework/react/guides/ssr`
 
 ### 1.3. General steps for adding React Query to my project
 
@@ -114,3 +114,57 @@ function Posts() {
 - `queryFn`: Function that fetches the data from your API
 - Returns loading states, error states, and the actual data
 - Automatically handles caching, background refetching, and error retry
+
+### isFetching vs isLoading
+- `isFetching` : the async query function hasn't yet resolved
+- `isLoading` : the query is in the loading state for the first time (no cached data yet), plus `isFetching`
+
+### React Query Dev Tools
+`https://tanstack.com/query/latest/docs/framework/react/devtools`
+- Shows queries (by key)
+  - status of queries
+  - last updated timestamp
+- Data explorer
+- Query explorer
+
+### 1.4. Understanding Stale Data
+
+* **Default Behavior:** By default, React Query considers data "stale" (outdated) immediately after it is successfully fetched.
+* **What is Stale Data?**
+    * It is data that is **potentially expired** and marked as ready to be refetched.
+    * **Crucial Concept:** The data remains in the cache. React Query uses the **"Stale-while-revalidate"** strategy: it serves the stale data from the cache immediately while fetching fresh data in the background.
+* **Refetch Triggers:** Data refetching is only triggered for stale data. Common triggers include:
+    * Component remounting.
+    * Window refocusing (e.g., coming back to the browser tab).
+    * Network reconnection.
+* **`staleTime` vs. Max Age:** Think of `staleTime` as the **"maximum age"** of the data. As long as the data is younger than the `staleTime`, it is considered "Fresh" and no background refetching will occur.
+* **Trade-off:** Using `staleTime` allows the application to tolerate data potentially being slightly out of date in exchange for better performance and fewer network requests.
+
+### 1.5. Key Concepts: staleTime vs gcTime
+
+#### Why is the default staleTime set to 0?
+React Query prioritizes data integrity. By setting staleTime to 0, it ensures that every time a component mounts or you refocus the window, it checks the server for updates. It chooses to be "correct" rather than "fast" by default, leaving it to the developer to decide when data can safely stay old.
+
+#### staleTime vs gcTime (Garbage Collection)
+
+| Feature | staleTime | gcTime (formerly cacheTime) |
+|---------|-----------|-----------------------------|
+| **Purpose** | Defines how long data remains Fresh. | Defines how long inactive data stays in Memory. |
+| **Action** | Triggers a background refetch when data is "Stale". | Deletes the data from the cache completely. |
+| **User Experience** | Prevents unnecessary network requests. | Provides "backup" data to show during the next fetch. |
+| **Default Value** | 0 seconds | 5 minutes |
+
+#### Detailed Breakdown:
+
+**staleTime (The "Revalidation" Clock):**
+- Determines when data needs to be refetched.
+- As long as data is "Fresh" (within staleTime), it will never trigger a network request.
+- Think of it as the "Max Age" of your data.
+
+**gcTime (The "Cold Storage" Clock):**
+- Determines how long data stays in the cache after a component unmounts (is no longer visible on screen).
+- When there is no active useQuery using that specific key, the data goes into "cold storage."
+- The gcTime clock starts the moment the last observer (component) leaves.
+- Once gcTime elapses, the data is Garbage Collected (deleted) to free up browser memory.
+
+**Important Note:** The cache contains "backup data." If you return to a page before gcTime expires, React Query will show you the old cached data immediately while it fetches new data in the background (if the data is stale).
