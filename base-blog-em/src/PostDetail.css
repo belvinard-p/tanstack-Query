@@ -1,17 +1,51 @@
+/* Post Detail States */
 .title {
-  color: blue;
+  color: #1e40af;
 }
 
 .error {
-  color: red;
-  font-weight: bold;
+  color: #dc2626;
+  font-weight: 600;
+  padding: 0.5rem;
+  background-color: #fee2e2;
+  border-radius: 4px;
+  margin: 0.5rem 0;
 }
 
 .loading {
-  color: purple;
+  color: #7c3aed;
   font-style: italic;
+  padding: 0.5rem;
+  background-color: #f3e8ff;
+  border-radius: 4px;
+  margin: 0.5rem 0;
 }
 
 .success {
-  color: green;
+  color: #16a34a;
+  font-weight: 500;
+  padding: 0.5rem;
+  background-color: #dcfce7;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+}
+
+/* Post Detail Actions */
+button {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  border: 1px solid #333;
+  background-color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
 }

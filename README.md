@@ -1,5 +1,6 @@
 # React Query: Server State Management in React
 
+# base-blog-em project
 ## 1. Creating Queries and Loading Error States
 React Query (TanStack Query) is a powerful library for managing server state in React applications.
 
@@ -168,3 +169,22 @@ React Query prioritizes data integrity. By setting staleTime to 0, it ensures th
 - Once gcTime elapses, the data is Garbage Collected (deleted) to free up browser memory.
 
 **Important Note:** The cache contains "backup data." If you return to a page before gcTime expires, React Query will show you the old cached data immediately while it fetches new data in the background (if the data is stale).
+
+### Documentation 
+`https://tanstack.com/query/latest/docs/framework/react/guides/prefetching#prefetchquery--prefetchinfinitequery`
+
+`https://tanstack.com/query/latest/docs/framework/react/guides/mutations`
+
+**EXtending Blog-em Ipsum**
+We will focus on the concepts like `Query Keys`, `Prefetching` and `Mutations`
+
+### Code Quiz Ftech Comments
+- `/src/PostDetails.jdx`
+- Run useQuery
+- Account for error, loading and results
+- Be sure to choose a different query? (not ["posts"])
+  - React Query uses the key for cache / stale time
+- query function needs postId parameter
+  - () => fetchComments(post.id)
+- Warning: comment won't refresh when you click on different posts
+  - Might get ESLint warning / Error

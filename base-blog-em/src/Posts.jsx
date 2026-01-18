@@ -6,14 +6,14 @@ import { PostDetail } from "./PostDetail";
 const maxPostPage = 10;
 
 export function Posts() {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
 
   // replace with useQuery
   // const data = [];
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
+    queryKey: ["posts", currentPage],
+    queryFn: () => fetchPosts(currentPage),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -44,11 +44,20 @@ export function Posts() {
         ))}
       </ul>
       <div className="pages">
-        <button disabled onClick={() => {}}>
+        <button 
+          disabled={currentPage <= 1} 
+          onClick={() => {setCurrentPage(previousValue => previousValue - 1);
+          }}
+        >
           Previous page
         </button>
         <span>Page {currentPage + 1}</span>
-        <button disabled onClick={() => {}}>
+        <button 
+          disabled={currentPage >= maxPostPage} 
+          onClick={() => {
+            setCurrentPage(previousValue => previousValue + 1);
+          }}
+        >
           Next page
         </button>
       </div>
