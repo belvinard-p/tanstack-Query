@@ -276,3 +276,29 @@ In React, **Unmounting** occurs when a component is removed from the DOM (User I
 
 #### Why keep data after unmount?
 If a user accidentally navigates away and clicks "Back" immediately, React Query restores the data from the cache. This prevents a "flash" of a loading spinner and makes the app feel significantly faster. The `gcTime` determines exactly how long this data should stay in memory before being permanently deleted.
+
+## 2. Mutations: Modifying Server Data
+
+### 2.1. What is a Mutation?
+A **Mutation** is a network call that changes data on the server (e.g., POST, PUT, DELETE, PATCH). 
+
+* **Practice with JSONPlaceholder:** Note that the JSONPlaceholder API simulates these changes; it will return a success response, but the data on their server won't actually be modified.
+* **The Goal:** Mastering the mechanics of how React Query handles the transition from sending data to updating the UI.
+
+#### Advanced Techniques (Demonstrated in the Day Spa project):
+* **Optimistic Updates:** Updating the UI immediately *before* the server confirms the change (assuming it will succeed).
+* **Manual Cache Updates:** Manually updating the React Query cache with the data returned from the server response.
+* **Invalidation:** Triggering a re-fetch of relevant data keys to ensure the UI stays synchronized with the server.
+
+---
+
+### 2.2. The `useMutation` Hook
+
+`useMutation` is structurally similar to `useQuery`, but with key differences designed for side effects:
+
+* **`mutate` function:** Instead of running automatically on mount, it returns a function you call whenever you want to trigger the change (e.g., on button click).
+* **No Query Key required:** Unlike `useQuery`, you don't typically need a key because mutations aren't cached for long-term retrieval.
+* **Status states:** It provides `isPending` (formerly `isLoading`), but has **no `isFetching`** state because it doesn't background-refetch automatically.
+* **No Retries by default:** Unlike queries, mutations do not retry automatically on failure. This is to prevent accidental duplicate "create" actions on the server (though this is configurable).
+
+> **Official Documentation:** [TanStack Query - Mutations](https://tanstack.com/query/latest/docs/framework/react/guides/mutations)
