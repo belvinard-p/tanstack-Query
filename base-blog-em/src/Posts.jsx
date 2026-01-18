@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query"  
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query"  
 
 import { fetchPosts, deletePost, updatePost } from "./api";
 import { PostDetail } from "./PostDetail";
@@ -8,6 +8,17 @@ const maxPostPage = 10;
 export function Posts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      queryClient.prefetchQuery({ 
+        queryKey: ["posts", nextPage],
+        queryFn: () => fetchPosts(nextPage)
+      });
+    }
+  }, [currentPage, queryClient]);
 
   // replace with useQuery
   // const data = [];
@@ -15,6 +26,7 @@ export function Posts() {
     queryKey: ["posts", currentPage],
     queryFn: () => fetchPosts(currentPage),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,    // 10 minutes: Data stays in "memory" after unmount
   });
 
   if ( isLoading) { 
@@ -51,7 +63,7 @@ export function Posts() {
         >
           Previous page
         </button>
-        <span>Page {currentPage + 1}</span>
+        <span>Page {currentPage}</span>
         <button 
           disabled={currentPage >= maxPostPage} 
           onClick={() => {

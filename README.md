@@ -188,3 +188,91 @@ We will focus on the concepts like `Query Keys`, `Prefetching` and `Mutations`
   - () => fetchComments(post.id)
 - Warning: comment won't refresh when you click on different posts
   - Might get ESLint warning / Error
+
+### 1.6. Prefetching: anticipating user needs
+
+Prefetching is a powerful technique to improve user experience (UX) by loading data into the cache **before** the user actually requests it. This makes the application feel instantaneous.
+
+#### How it Works
+* **Cache warming:** Data is fetched and stored in the cache manually (usually via `queryClient.prefetchQuery`).
+* **Stale status:** By default, prefetched data is considered **stale** immediately. However, this is configurable using the `staleTime` option.
+* **Instant display:** When a user navigates to a component that uses the prefetched query, React Query serves the data from the cache.
+    * If the data is stale: It shows the cached version while re-fetching fresh data in the background.
+    * If the data is fresh: It simply shows the cached version without a network request.
+
+
+#### Use Cases
+Prefetching is not limited to pagination. It can be used for any anticipated user interaction:
+1.  **Pagination:** Loading the "Next Page" while the user is still viewing the current one.
+2.  **Hover triggers:** Fetching specific item details when a user hovers over a link or list item.
+3.  **Navigation:** Loading data for a dashboard tab before the user clicks on it.
+4.  **Flow prediction:** In a multi-step process (like a checkout), loading data for Step 2 while the user is completing Step 1.
+
+#### Important constraints
+* **Garbage collection:** Prefetched data is subject to `gcTime`. If the user doesn't navigate to the data before the `gcTime` expires, it will be removed from memory.
+* **Resource management:** Over-prefetching can lead to unnecessary network load. It is best to prefetch only the most likely next actions.
+
+> **Official Documentation:** [TanStack Query - Prefetching Guide](https://tanstack.com/query/latest/docs/framework/react/guides/prefetching)
+
+### 1.7. Memory Management & Garbage Collection
+
+React Query is not just a data fetcher; it is a **memory manager**. It ensures that your application remains performant by cleaning up data that is no longer needed.
+
+#### The "Inactive" State
+When a component that uses a specific query unmounts (for example, when you navigate away from a blog post back to the home page), that query is marked as **inactive**. 
+
+* The data is not deleted immediately.
+* It stays in the cache as "backup" in case the user returns quickly.
+
+#### The Garbage Collection (GC) Process
+The `gcTime` (Garbage Collection Time) is the countdown timer for inactive data.
+
+1.  **Trigger:** The last observer (component) of a query unmounts.
+2.  **Countdown:** The `gcTime` clock starts (default is 5 minutes).
+3.  **Purge:** If no new component requests this data before the timer reaches zero, the data is **purged** (deleted) from the memory.
+
+
+
+#### Why is this important?
+Without Garbage Collection, a Single Page Application (SPA) would suffer from **Memory Leaks**:
+* **Performance:** The browser would slow down as the cache grows indefinitely.
+* **Stale Overload:** You would be storing thousands of "unreferenced" objects that the user might never see again.
+
+#### Summary of the Lifecycle
+* **Active:** Data is being used by a visible component.
+* **Inactive:** Data is in the cache but no component is using it.
+* **Purged:** Data has been garbage collected after `gcTime` elapsed.
+
+> **Key Takeaway:** `staleTime` is about **Data Freshness** (Network), while `gcTime` is about **Memory Cleanup** (Hardware).
+
+### 1.8. The Synergy: staleTime vs gcTime
+
+While they work together, they control different layers of the cache:
+
+| Feature | staleTime | gcTime |
+| :--- | :--- | :--- |
+| **Focus** | **Network Efficiency** | **Memory Efficiency** |
+| **Goal** | Avoid unnecessary API calls. | Avoid memory leaks in the browser. |
+| **User Impact** | Determines if the user sees a "freshness" update. | Determines if the user sees a loading spinner on return. |
+
+**Pro Tip:** Always keep `gcTime` equal to or longer than `staleTime`. If you delete data from the cache (`gcTime`) before it becomes stale, you lose the ability to show "backup" data while refetching.
+### 1.9. Applying staleTime & gcTime to Pagination
+
+When navigating between pages (e.g., `currentPage`), both settings play a vital role:
+
+* **staleTime (5 min):** If I return to Page 1 within 5 minutes, React Query says: *"This is fresh, I won't even ask the server for updates."*
+* **gcTime (10 min):** If I leave the blog for 7 minutes and come back, React Query says: *"The data is stale (over 5 min), BUT I still have it in my memory (under 10 min). I will show you the old data immediately while I fetch the new data in the background."*
+
+
+
+**Key Rule:** `gcTime` should generally be **greater than or equal to** `staleTime`. If `gcTime` is shorter, your data will be deleted from memory before it even has a chance to be considered "stale but usable."
+
+### 1.10. Definition: What is an "Unmount"?
+
+In React, **Unmounting** occurs when a component is removed from the DOM (User Interface). 
+
+* **Standard React State (`useState`):** All data is wiped out instantly upon unmount.
+* **React Query State:** Data is preserved in the cache even after the component unmounts. 
+
+#### Why keep data after unmount?
+If a user accidentally navigates away and clicks "Back" immediately, React Query restores the data from the cache. This prevents a "flash" of a loading spinner and makes the app feel significantly faster. The `gcTime` determines exactly how long this data should stay in memory before being permanently deleted.
