@@ -302,3 +302,36 @@ A **Mutation** is a network call that changes data on the server (e.g., POST, PU
 * **No Retries by default:** Unlike queries, mutations do not retry automatically on failure. This is to prevent accidental duplicate "create" actions on the server (though this is configurable).
 
 > **Official Documentation:** [TanStack Query - Mutations](https://tanstack.com/query/latest/docs/framework/react/guides/mutations)
+
+### 3. Blog-em Ipsum Summary
+
+#### Setup & Configuration
+- Install `@tanstack/react-query` and `@tanstack/react-query-devtools`
+- Create `QueryClient` instance
+- Wrap app with `QueryClientProvider`
+- Add `ReactQueryDevtools` for debugging
+
+#### Queries (Data Fetching)
+- Use `useQuery` hook with `queryKey` and `queryFn`
+- Handle states: `isLoading`, `isError`, `error`, `data`
+- Configure `staleTime` (when to refetch) and `gcTime` (memory retention)
+- **Query Keys as Dependencies**: `["posts", currentPage]` creates separate cache entries
+- **Dynamic Queries**: `["comments", post.id]` refetches when post.id changes
+
+#### Pagination & Prefetching
+- Use query keys with page numbers: `["posts", currentPage]`
+- Prefetch next page with `queryClient.prefetchQuery()` in `useEffect`
+- Improves UX by loading data before user requests it
+
+#### Mutations (Data Modification)
+- Use `useMutation` hook for DELETE/PATCH/POST operations
+- Call `mutation.mutate(id)` to trigger the mutation
+- Handle mutation states: `isPending`, `isSuccess`, `isError`, `error`
+- Use `mutation.reset()` to clear previous states when switching items
+- **Important**: Native `fetch` uses `body` (not `data`) with `JSON.stringify()`
+
+#### Key Learnings
+- `isFetching` vs `isLoading`: fetching = any request, loading = first request only
+- Mutations don't retry by default (prevents duplicate operations)
+- JSONPlaceholder simulates changes (doesn't persist on server)
+- React Query DevTools shows cache state, query keys, and timestamps
