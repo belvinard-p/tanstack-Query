@@ -569,7 +569,3 @@ To display all items from all pages in a single continuous list, you perform a "
   </React.Fragment>
 ))}
 ```
-
-task
-- Update src/App.js
-{/**/}
