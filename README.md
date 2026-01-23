@@ -654,3 +654,23 @@ useEffect(() => {
    Page 3 data
 ⬇️ [Load Next Trigger]
 ```
+
+### 4.11. Infinite Scroll Summary & Key Takeaways
+
+Implementing infinite scroll requires a partnership between **React Query** (state management) and the **UI Component** (event detection).
+
+#### What React Query Manages:
+* **`pageParam`**: Automatically tracks the "pointer" for the next fetch.
+* **`getNextPageParam`**: A logic gate you define to calculate the next page.
+    * Can derive the next page from the **`lastPage`** (e.g., `data.next` URL).
+    * Can also use **`allPages`** to calculate the next page number based on current list length.
+* **`hasNextPage`**: A derived boolean that tells the UI if there is more data to fetch. It is automatically set to `false` when `getNextPageParam` returns `undefined`.
+
+
+
+#### What the Component Manages:
+* **The Trigger**: Calling **`fetchNextPage`** when the user interaction (scroll or click) occurs.
+* **Termination**: Using the **`hasNextPage`** value to disable scroll listeners or hide "Load More" buttons once the end of the data is reached.
+* **Loading States**: Distinguishing between the initial load (`isPending`) and appending more data (`isFetchingNextPage`) to provide a better user experience.
+
+> **Final Thought:** Infinite scroll is more efficient than standard pagination for mobile-first designs or discovery-based apps (like social feeds), as it reduces the "interaction cost" for the user while keeping the browser memory lean by loading data only "Just-In-Time."

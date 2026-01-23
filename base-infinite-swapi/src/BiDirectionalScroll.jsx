@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 
 const initialUrl = "https://swapi.dev/api/starships/?page=2"; // Start from middle
 const fetchUrl = async (url) => {
@@ -145,14 +146,13 @@ export function BiDirectionalScroll() {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          fontSize: '2rem',
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           transition: 'all 0.3s',
           zIndex: 1000,
           border: 'none',
         }}
       >
-        ⬆️
+        <FaArrowCircleUp size={32} color="#000" />
       </button>
 
       {/* Floating Down Arrow - Always enabled */}
@@ -173,23 +173,26 @@ export function BiDirectionalScroll() {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          fontSize: '2rem',
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           transition: 'all 0.3s',
           zIndex: 1000,
           border: 'none',
         }}
       >
-        ⬇️
+        <FaArrowCircleDown size={32} color="#000" />
       </button>
 
       {/* Top Loading Indicator */}
       <div ref={topRef} style={{ padding: '1rem', textAlign: 'center' }}>
         {isFetchingPreviousPage && (
-          <div className="loading">⬆️ Loading previous...</div>
+          <div className="loading">
+            <FaArrowCircleUp style={{ marginRight: '0.5rem' }} /> Loading previous...
+          </div>
         )}
         {!hasPreviousPage && !isFetchingPreviousPage && (
-          <div style={{ color: '#daa520' }}>⬆️ No more previous data</div>
+          <div style={{ color: '#daa520', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaArrowCircleUp style={{ marginRight: '0.5rem' }} /> No more previous data
+          </div>
         )}
       </div>
 
@@ -210,10 +213,14 @@ export function BiDirectionalScroll() {
       {/* Bottom Loading Indicator */}
       <div ref={bottomRef} style={{ padding: '1rem', textAlign: 'center' }}>
         {isFetchingNextPage && (
-          <div className="loading">⬇️ Loading next...</div>
+          <div className="loading">
+            <FaArrowCircleDown style={{ marginRight: '0.5rem' }} /> Loading next...
+          </div>
         )}
         {!hasNextPage && !isFetchingNextPage && (
-          <div style={{ color: '#daa520' }}>⬇️ No more next data</div>
+          <div style={{ color: '#daa520', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaArrowCircleDown style={{ marginRight: '0.5rem' }} /> No more next data
+          </div>
         )}
       </div>
     </div>
