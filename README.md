@@ -335,3 +335,32 @@ A **Mutation** is a network call that changes data on the server (e.g., POST, PU
 - Mutations don't retry by default (prevents duplicate operations)
 - JSONPlaceholder simulates changes (doesn't persist on server)
 - React Query DevTools shows cache state, query keys, and timestamps
+
+# Second Project: Infinite SWAPI (Stars word API)
+
+## 4. INFINITE QUERIES FOR LOADING DATA JUST IN TIME
+
+
+- Documentation
+`https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries`
+`https://tanstack.com/query/latest/docs/framework/react/reference/useInfiniteQuery`
+`https://www.npmjs.com/package/react-infinite-scroller`
+
+- Infinite scroll
+  - fetch new data "just in time" as user scroll
+  - more efficient than fetching all data aat once
+- Fetch new data when ...
+  - user clicks a button
+  - user scrolls to certain point on the change
+
+### 4.1. Setting up Infinite Queries with `useInfiniteQuery`
+- REquires different API format than pagination
+- Hence new project!
+- Pagination
+  - track current page in component state
+  - new query updates page number
+- `useInfiniteQuery` tracks next query
+  - next query is returned as part of the data
+
+
+
