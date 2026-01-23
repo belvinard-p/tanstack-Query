@@ -508,21 +508,66 @@ Since `data.pages` is an array of page objects (and each page has a `results` ar
 ```
 
 ### 4.7. The useInfiniteQuery Lifecycle Flow
-
-```mermaid
-graph TD
-    A[Component Mounts] --> B[Fetch First Page]
-    B --> C[Initial Data in<br>data.pages[0]]
-    C --> D[getNextPageParam<br>Analyzes lastPage]
-    D --> E{More Data?}
-    E -->|Yes| F[Update pageParam<br>hasNextPage = true]
-    E -->|No| G[hasNextPage = false]
-    F --> H[User Triggers: Scroll/Button]
-    G --> Z[End of Data]
-    H --> I[Call fetchNextPage]
-    I --> J[isFetchingNextPage = true]
-    J --> K[Fetch Next Page<br>with new pageParam]
-    K --> L[Append to data.pages[n]]
-    L --> M[Render Cumulative List]
-    M --> D
-```
+┌─────────────────────┐
+│ Component Mounts │
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ Fetch First Page │
+│ initialPageParam │
+│ isPending = true │
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ Data Received │
+│ data.pages[0] = │
+│ first page data │
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ getNextPageParam() │
+│ Analyzes lastPage │
+│ Extracts next link │
+└──────────┬──────────┘
+├───────────────────┐
+│ More Data? │
+▼ ▼
+┌─────────────────────┐ ┌─────────────────────┐
+│ Update pageParam │ │ hasNextPage = false│
+│ hasNextPage = true │ │ End of Data │
+└──────────┬──────────┘ └─────────────────────┘
+│
+▼
+┌─────────────────────┐
+│ User Action: │
+│ - Scroll to bottom │
+│ - Click "Load More"│
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ fetchNextPage() │
+│ isFetchingNextPage │
+│ = true │
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ Fetch Next Page │
+│ with new pageParam │
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ Append to cache: │
+│ data.pages[n] = │
+│ new page data │
+└──────────┬──────────┘
+▼
+┌─────────────────────┐
+│ Render Cumulative │
+│ List │
+└──────────┬──────────┘
+│
+▼
+┌──────────────┐
+│ Loop back │
+│ to step 3 │
+└──────────────┘
