@@ -506,5 +506,6 @@ Since `data.pages` is an array of page objects (and each page has a `results` ar
   </React.Fragment>
 ))}
 ```
+### Diagram
 ![alt text](image.png)
 
