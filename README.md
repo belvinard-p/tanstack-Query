@@ -569,3 +569,88 @@ To display all items from all pages in a single continuous list, you perform a "
   </React.Fragment>
 ))}
 ```
+
+### 4.10. Bi-Directional Infinite Scrolling
+
+Bi-directional scrolling allows users to load data in BOTH directions: scroll UP to load previous pages, scroll DOWN to load next pages.
+
+#### Key Concepts
+
+**New Functions:**
+- `fetchPreviousPage()`: Load older data (scroll up)
+- `hasPreviousPage`: Boolean - is there previous data?
+- `isFetchingPreviousPage`: Loading state for previous data
+- `getPreviousPageParam`: Extract previous page URL from API response
+
+#### Implementation
+
+```javascript
+const {
+  data,
+  fetchNextPage,
+  hasNextPage,
+  fetchPreviousPage,
+  hasPreviousPage,
+  isFetchingPreviousPage,
+} = useInfiniteQuery({
+  queryKey: ["items"],
+  queryFn: ({ pageParam }) => fetchUrl(pageParam),
+  initialPageParam: "https://api.com/items?page=2", // Start from middle
+  getNextPageParam: (lastPage) => lastPage.next || undefined,
+  getPreviousPageParam: (firstPage) => firstPage.previous || undefined,
+});
+```
+
+#### Use Cases
+- **Chat Applications**: Load older messages when scrolling up
+- **Social Feeds**: Load both newer and older posts
+- **Timeline Views**: Navigate through historical data
+- **Large Datasets**: Start from middle, explore both directions
+
+#### Implementation Strategy
+
+1. **Start from Middle**: Set `initialPageParam` to a middle page (not page 1)
+2. **Two Observers**: Use Intersection Observer for both top and bottom
+3. **Two Loading States**: Show different indicators for up/down loading
+4. **API Support**: API must provide both `next` and `previous` URLs
+
+**Example with Intersection Observer:**
+
+```javascript
+// Top observer (load previous)
+useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && hasPreviousPage) {
+        fetchPreviousPage();
+      }
+    },
+    { threshold: 0.5 }
+  );
+  observer.observe(topRef.current);
+  return () => observer.disconnect();
+}, [hasPreviousPage, fetchPreviousPage]);
+
+// Bottom observer (load next)
+useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    { threshold: 0.5 }
+  );
+  observer.observe(bottomRef.current);
+  return () => observer.disconnect();
+}, [hasNextPage, fetchNextPage]);
+```
+
+**Visual Flow:**
+```
+⬆️ [Load Previous Trigger]
+   Page 1 data
+   Page 2 data (initial)
+   Page 3 data
+⬇️ [Load Next Trigger]
+```

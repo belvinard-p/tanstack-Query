@@ -5,6 +5,7 @@ import "./App.css";
 import { Home } from "./Home";
 import { InfinitePeople } from "./people/InfinitePeople";
 import { InfiniteSpecies } from "./species/InfiniteSpecies";
+import { BiDirectionalScroll } from "./BiDirectionalScroll";
 
 const queryClient = new QueryClient()
 
@@ -36,6 +37,7 @@ function App() {
         {view === 'home' && <Home onNavigate={setView} />}
         {view === 'people' && <InfinitePeople />}
         {view === 'species' && <InfiniteSpecies />}
+        {view === 'bidirectional' && <BiDirectionalScroll />}
       </div>
       <ReactQueryDevtools />
     </QueryClientProvider>
