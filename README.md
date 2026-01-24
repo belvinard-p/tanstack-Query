@@ -674,3 +674,13 @@ Implementing infinite scroll requires a partnership between **React Query** (sta
 * **Loading States**: Distinguishing between the initial load (`isPending`) and appending more data (`isFetchingNextPage`) to provide a better user experience.
 
 > **Final Thought:** Infinite scroll is more efficient than standard pagination for mobile-first designs or discovery-based apps (like social feeds), as it reduces the "interaction cost" for the user while keeping the browser memory lean by loading data only "Just-In-Time."
+
+# Project 3: Base lazy days
+
+## 3.1. React Query in Larger App
+- centralizing indicator / error handling
+- refetching data
+- integrating with auth
+- dependent queries
+- testing
+- more examples of `useQuery`, `mutation`, `pagination`, `prefetching` 
