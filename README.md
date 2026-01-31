@@ -684,3 +684,7 @@ Implementing infinite scroll requires a partnership between **React Query** (sta
 - dependent queries
 - testing
 - more examples of `useQuery`, `mutation`, `pagination`, `prefetching` 
+
+`npm i -D @tanstack/eslint-plugin-query`
+
+- documentation
